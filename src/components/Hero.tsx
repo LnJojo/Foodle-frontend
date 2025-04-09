@@ -27,9 +27,9 @@ const Hero = () => {
               >
                 <Link to="/register">Commencer</Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              {/*<Button asChild variant="outline" size="lg">
                 <Link to="/about">En savoir plus</Link>
-              </Button>
+              </Button>*/}
             </div>
           </div>
         </div>
