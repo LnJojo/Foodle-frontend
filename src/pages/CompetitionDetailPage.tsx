@@ -77,9 +77,7 @@ const CompetitionDetailPage = () => {
   const [isCreator, setIsCreator] = useState<boolean>(false);
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const [isCreatingRestaurant, setIsCreatingRestaurant] = useState(false);
-  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
   const [isJoiningCompetition, setIsJoiningCompetition] = useState(false);
-  const [isFinishingCompetition, setIsFinishingCompetition] = useState(false);
 
   // Fonction pour déterminer si un restaurant a été visité (a des évaluations)
   const isRestaurantVisited = useCallback(
@@ -108,7 +106,6 @@ const CompetitionDetailPage = () => {
   // Fonction pour formater la date de visite
   const formatVisitDate = (dateString: string) => {
     const visitDate = new Date(dateString);
-    const today = new Date();
 
     // Options pour le format de date
     const dateOptions: Intl.DateTimeFormatOptions = {
@@ -254,7 +251,6 @@ const CompetitionDetailPage = () => {
   }) => {
     if (!selectedRestaurant) return;
 
-    setIsSubmittingRating(true);
     // Fermer le modal immédiatement pour une meilleure UX
     setIsRatingModalOpen(false);
 
@@ -386,7 +382,6 @@ const CompetitionDetailPage = () => {
       );
       throw error;
     } finally {
-      setIsSubmittingRating(false);
       setSelectedRestaurant(null);
       setExistingRating(null);
     }
@@ -469,7 +464,6 @@ const CompetitionDetailPage = () => {
   const handleFinishCompetition = async () => {
     if (!competition || !isCreator) return;
 
-    setIsFinishingCompetition(true);
     const toastId = toast.loading("Finalisation de la compétition en cours...");
 
     try {
@@ -502,7 +496,6 @@ const CompetitionDetailPage = () => {
       toast.dismiss(toastId);
       toast.error("Échec lors de la tentative de terminer la compétition");
     } finally {
-      setIsFinishingCompetition(false);
     }
   };
 

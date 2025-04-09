@@ -14,7 +14,7 @@ export function useGroups() {
       console.log('Fetched groups data:', data); // Pour le débogage
       
       // Si data est un objet avec une propriété results, utilisez data.results
-      const groupsData = Array.isArray(data) ? data : data.results || [];
+      const groupsData = Array.isArray(data) ? data : [];
       setGroups(groupsData);
       
     } catch (err: any) {

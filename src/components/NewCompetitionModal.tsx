@@ -169,9 +169,6 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
 
       onClose();
     } catch (error: any) {
-      // Gestion des erreurs du serveur
-      const serverErrors = error.response?.data || {};
-
       // Mapper les erreurs du serveur aux champs du formulaire
       const formattedErrors: FormErrors = {};
 
