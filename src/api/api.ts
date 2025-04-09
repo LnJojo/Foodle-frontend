@@ -38,6 +38,7 @@ export const authService = {
       password1: data.password,        
       password2: data.password_confirm  
     };
+    console.log("Payload d'inscription:", payload);
     const response = await api.post('auth/registration/', payload);
     return response.data;
   },
