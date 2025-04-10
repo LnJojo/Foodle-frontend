@@ -94,9 +94,7 @@ const LoginPage = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="usernameOrEmail">
-                Email ou nom d'utilisateur
-              </Label>
+              <Label htmlFor="usernameOrEmail">Nom d'utilisateur</Label>
               <Input
                 id="usernameOrEmail"
                 type="text"
