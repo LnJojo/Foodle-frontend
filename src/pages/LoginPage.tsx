@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,9 @@ import Logo from "../assets/Logo.svg";
 import { useAuth } from "@/contexts/AuthContext";
 
 const LoginPage = () => {
+  useEffect(() => {
+    document.title = "Connexion | Foodle";
+  }, []);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

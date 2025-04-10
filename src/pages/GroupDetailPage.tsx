@@ -21,6 +21,9 @@ interface NewCompetitionData {
 }
 
 const GroupDetailPage = () => {
+  useEffect(() => {
+    document.title = "Groupe | Foodle";
+  }, []);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [group, setGroup] = useState<Group | null>(null);

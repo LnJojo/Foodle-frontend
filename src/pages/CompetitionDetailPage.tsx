@@ -50,6 +50,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import RatingRestaurantModal from "@/components/RatingRestaurantModal";
 
 const CompetitionDetailPage = () => {
+  useEffect(() => {
+    document.title = "Compétition | Foodle";
+  }, []);
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const [competition, setCompetition] = useState<Competition | null>(null);

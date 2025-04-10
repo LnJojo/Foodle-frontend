@@ -8,6 +8,9 @@ import { groupService } from "@/api/api";
 import { useAuth } from "@/contexts/AuthContext";
 
 const GroupInvitationPage = () => {
+  useEffect(() => {
+    document.title = "Invitation | Foodle";
+  }, []);
   const { invitationId } = useParams<{ invitationId: string }>();
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading } = useAuth();

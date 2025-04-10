@@ -7,11 +7,6 @@ import { useEffect } from "react";
 const HomePage = () => {
   useEffect(() => {
     document.title = "Accueil | Foodle";
-
-    const favicon = document.querySelector("link[rel='icon']");
-    if (favicon) {
-      favicon.setAttribute("href", "./assets/Logo.svg");
-    }
   }, []);
   return (
     <>

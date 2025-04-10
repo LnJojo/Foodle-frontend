@@ -31,6 +31,9 @@ interface NewCompetitionData {
 }
 
 const DashboardPage = () => {
+  useEffect(() => {
+    document.title = "Dashboard | Foodle";
+  }, []);
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [isNewGroupModalOpen, setIsNewGroupModalOpen] =
