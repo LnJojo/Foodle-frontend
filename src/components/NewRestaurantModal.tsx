@@ -17,8 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DatePicker } from "@/components/ui/date-picker";
 import { toast } from "sonner";
+import { DatePickerClient } from "./ui/date-picker-client";
 
 // Définition des types
 interface FormErrors {
@@ -296,7 +296,7 @@ const NewRestaurantModal: React.FC<NewRestaurantModalProps> = ({
             <label className="text-sm font-medium">
               Date de visite proposée<span className="text-red-500">*</span>
             </label>
-            <DatePicker
+            <DatePickerClient
               date={visitDate}
               onSelect={setVisitDate}
               label="Date de visite"

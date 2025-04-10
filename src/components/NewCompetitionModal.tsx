@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DatePicker } from "@/components/ui/date-picker";
 import { toast } from "sonner";
 import { DatePickerClient } from "./ui/date-picker-client";
 
@@ -323,7 +322,7 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
               <label className="text-sm font-medium">
                 Date de fin<span className="text-red-500">*</span>
               </label>
-              <DatePicker
+              <DatePickerClient
                 date={endDate}
                 onSelect={setEndDate}
                 label="Date de fin"
