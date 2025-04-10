@@ -73,6 +73,7 @@ export function DatePicker({
           }}
           initialFocus
           locale={fr}
+          className="pointer-events-auto"
         />
       </PopoverContent>
     </Popover>
