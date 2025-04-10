@@ -77,7 +77,7 @@ const LoginPage = () => {
             Connexion
           </CardTitle>
           <CardDescription className="text-center">
-            Entrez votre email ou nom d'utilisateur pour accéder à votre compte
+            Entrez votre nom d'utilisateur pour accéder à votre compte
           </CardDescription>
           {redirectPath && redirectPath.includes("/invite/") && (
             <div className="mt-2 text-sm text-amber-600 text-center">
