@@ -126,16 +126,6 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
 
     const groupToUse = isGroupReadOnly ? preselectedGroupId : group;
 
-    const competitionData = {
-      name,
-      group: groupToUse,
-      description,
-      start_date: startDate.toISOString().split("T")[0], // Format YYYY-MM-DD
-      end_date: endDate.toISOString().split("T")[0],
-      max_participants: parseInt(maxParticipants),
-      theme: theme || undefined,
-    };
-
     try {
       await onCreateCompetition({
         name,
