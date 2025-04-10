@@ -77,7 +77,6 @@ const NewGroupModal: React.FC<NewGroupModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    console.log("Current token:", localStorage.getItem("token"));
     if (!validateForm()) return;
 
     setIsSubmitting(true);

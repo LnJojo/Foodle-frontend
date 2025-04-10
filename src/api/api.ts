@@ -28,8 +28,16 @@ api.interceptors.request.use(
 // Services d'authentification
 export const authService = {
   login: async (data: LoginRequest) => {
-    const response = await api.post('auth/login/', data);
-    return response.data;
+    try {
+      const response = await api.post('auth/login/', data);
+      return response.data;
+    } catch (error: any) {
+      // Gérer les erreurs spécifiques
+      if (error.response?.data) {
+        throw error;
+      }
+      throw new Error('Erreur de connexion au serveur');
+    }
   },
   register: async (data: RegisterRequest) => {
     const payload = {
@@ -38,9 +46,24 @@ export const authService = {
       password1: data.password,        
       password2: data.password_confirm  
     };
-    console.log("Payload d'inscription:", payload);
-    const response = await api.post('auth/registration/', payload);
-    return response.data;
+    
+    try {
+      const response = await api.post('auth/registration/', payload);
+      return response.data;
+    } catch (error: any) {
+      // Transformer les erreurs pour un traitement plus facile côté frontend
+      if (error.response?.data) {
+        // Si nous avons des erreurs spécifiques à l'email
+        if (error.response.data.email) {
+          // On peut choisir de formater l'erreur pour une meilleure lisibilité
+          if (typeof error.response.data.email === 'object') {
+            error.response.data.email = error.response.data.email[0];
+          }
+        }
+        throw error;
+      }
+      throw new Error('Erreur d\'inscription');
+    }
   },
   logout: async () => {
     const response = await api.post('auth/logout/');
@@ -56,12 +79,10 @@ export const authService = {
 export const groupService = {
   getGroups: async () => {
     const response = await api.get('groups/');
-    console.log('API response:', response.data);
     return response.data as Group[];
   },
   getGroup: async (id: number) => {
     const response = await api.get(`groups/${id}/`);
-    console.log("API Response : ", response);
     return response.data as Group;
   },
   getGroupMembers: async (groupId: number) => {
@@ -149,7 +170,6 @@ export const competitionService = {
   getCompetition: async (id: number) => {
     try {
       const response = await api.get(`competitions/${id}/`);
-      console.log("Réponse API détail compétition:", response.data);
       return response.data as Competition;
     } catch (error) {
       console.error("Erreur lors de la récupération de la compétition:", error);
@@ -176,10 +196,8 @@ export const competitionService = {
       // Mais pour s'assurer que tout fonctionne, on peut également appeler explicitement joinCompetition
       try {
         await api.post(`competitions/${newCompetition.id}/join/`);
-        console.log("Le créateur a rejoint automatiquement la compétition");
       } catch (joinError) {
         // Si l'erreur est due au fait que l'utilisateur est déjà participant, c'est OK
-        console.log("Remarque: le créateur est peut-être déjà participant:", joinError);
       }
       
       return newCompetition;
@@ -190,7 +208,6 @@ export const competitionService = {
   },
   updateCompetition: async (id: number, data: Partial<CreateCompetitionRequest>) => {
     try {
-      console.log(`Mise à jour de la compétition ${id} avec les données:`, data);
       const response = await api.patch(`competitions/${id}/`, data);
       return response.data as Competition;
     } catch (error) {

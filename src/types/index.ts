@@ -75,7 +75,8 @@ export interface User {
   
   // Types pour les formulaires et les API
   export interface LoginRequest {
-    username: string;
+    username?: string;
+    email?: string;
     password: string;
   }
   

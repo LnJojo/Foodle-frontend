@@ -371,11 +371,6 @@ const GroupDetailPage = () => {
                   Aucun membre dans ce groupe pour le moment
                 </div>
               )}
-
-              <Button variant="outline" className="w-full mt-6 border-gray-300">
-                <Plus className="mr-2 h-4 w-4" />
-                Inviter des membres
-              </Button>
             </div>
           </TabsContent>
           <TabsContent value="map">

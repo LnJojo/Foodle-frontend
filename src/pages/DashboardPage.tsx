@@ -162,7 +162,8 @@ const DashboardPage = () => {
   const filteredCompetitions = useMemo(() => {
     return competitions.filter((comp) => {
       const statusMatch = !statusFilter || comp.status === statusFilter;
-      const groupMatch = !groupFilter || comp.name === groupFilter;
+      // Correction du filtre par groupe - utiliser l'ID du groupe au lieu du nom
+      const groupMatch = !groupFilter || comp.group.toString() === groupFilter;
       return statusMatch && groupMatch;
     });
   }, [competitions, statusFilter, groupFilter]);
@@ -181,14 +182,17 @@ const DashboardPage = () => {
       <Navbar />
 
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-semibold text-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Titre */}
+          <h1 className="text-xl font-semibold text-gray-900 mb-4 md:mb-0">
             Gérez vos groupes et compétitions
           </h1>
-          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+
+          {/* Boutons - affichés en dessous sur mobile, à côté sur desktop */}
+          <div className="flex flex-col sm:flex-row gap-2 mt-3 sm:mt-4">
             <Button
               onClick={() => setIsNewGroupModalOpen(true)}
-              className="bg-amber-600 hover:bg-amber-700 flex-1 sm:flex-auto"
+              className="bg-amber-600 hover:bg-amber-700 w-full sm:w-auto"
               disabled={isCreatingGroup}
             >
               {isCreatingGroup ? (
@@ -196,14 +200,13 @@ const DashboardPage = () => {
               ) : (
                 <>
                   <Plus className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Nouveau groupe</span>
-                  <span className="sm:hidden">Groupe</span>
+                  <span>Nouveau groupe</span>
                 </>
               )}
             </Button>
             <Button
               onClick={() => setIsNewCompetitionModalOpen(true)}
-              className="bg-amber-600 hover:bg-amber-700 flex-1 sm:flex-auto"
+              className="bg-amber-600 hover:bg-amber-700 w-full sm:w-auto"
               disabled={isCreatingCompetition || groups.length === 0}
             >
               {isCreatingCompetition ? (
@@ -211,8 +214,7 @@ const DashboardPage = () => {
               ) : (
                 <>
                   <Plus className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Nouvelle compétition</span>
-                  <span className="sm:hidden">Compétition</span>
+                  <span>Nouvelle compétition</span>
                 </>
               )}
             </Button>
@@ -318,22 +320,24 @@ const DashboardPage = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center py-10 bg-gray-50 rounded-md text-gray-500">
+                    <div className="text-center py-10 flex flex-col bg-gray-50 rounded-md text-gray-500">
                       Vous n'avez pas encore de groupes
-                      <Button
-                        className="mt-4 bg-amber-600 hover:bg-amber-700"
-                        onClick={() => setIsNewGroupModalOpen(true)}
-                        disabled={isCreatingGroup}
-                      >
-                        {isCreatingGroup ? (
-                          <span>Création...</span>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Créer mon premier groupe
-                          </>
-                        )}
-                      </Button>
+                      <div>
+                        <Button
+                          className="mt-4 bg-amber-600 hover:bg-amber-700"
+                          onClick={() => setIsNewGroupModalOpen(true)}
+                          disabled={isCreatingGroup}
+                        >
+                          {isCreatingGroup ? (
+                            <span>Création...</span>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Créer mon premier groupe
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </section>
@@ -406,10 +410,7 @@ const DashboardPage = () => {
                         >
                           <option value="">Tous les groupes</option>
                           {groups.map((group) => (
-                            <option
-                              key={group.id}
-                              value={group.name.toString()}
-                            >
+                            <option key={group.id} value={group.id.toString()}>
                               {group.name}
                             </option>
                           ))}

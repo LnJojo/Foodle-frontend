@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { authService } from "@/api/api";
+import { Loader2 } from "lucide-react";
 
 const RegisterPage = () => {
   useEffect(() => {
@@ -23,14 +24,22 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // État pour gérer le chargement
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Réinitialisation des erreurs
     setError("");
+    setEmailError("");
+    setUsernameError("");
+    setIsLoading(true);
 
     if (password !== passwordConfirm) {
       setError("Les mots de passe ne correspondent pas");
+      setIsLoading(false);
       return;
     }
 
@@ -48,10 +57,39 @@ const RegisterPage = () => {
         },
       });
     } catch (err: any) {
+      // Gestion spécifique des erreurs d'email
+      if (err.response?.data?.email) {
+        setEmailError(err.response.data.email[0]);
+      }
+      // Gestion spécifique des erreurs de username
+      if (err.response?.data?.username) {
+        setUsernameError(err.response.data.username[0]);
+      }
+      // Message d'erreur général
       setError(
         err.response?.data?.detail ||
+          err.response?.data?.non_field_errors?.[0] ||
           "Une erreur est survenue lors de l'inscription"
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Validation de l'email en temps réel
+  const validateEmail = (email: string) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+
+    if (newEmail && !validateEmail(newEmail)) {
+      setEmailError("Veuillez entrer une adresse email valide");
+    } else {
+      setEmailError("");
     }
   };
 
@@ -82,7 +120,12 @@ const RegisterPage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                disabled={isLoading}
+                className={usernameError ? "border-red-500" : ""}
               />
+              {usernameError && (
+                <p className="text-red-500 text-sm">{usernameError}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -91,9 +134,14 @@ const RegisterPage = () => {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleEmailChange}
                 required
+                disabled={isLoading}
+                className={emailError ? "border-red-500" : ""}
               />
+              {emailError && (
+                <p className="text-red-500 text-sm">{emailError}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -104,6 +152,7 @@ const RegisterPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -115,14 +164,23 @@ const RegisterPage = () => {
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 required
+                disabled={isLoading}
               />
             </div>
 
             <Button
               type="submit"
               className="w-full bg-amber-600 hover:bg-amber-700"
+              disabled={!!emailError || isLoading}
             >
-              S'inscrire
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Inscription en cours...
+                </>
+              ) : (
+                "S'inscrire"
+              )}
             </Button>
           </form>
         </CardContent>

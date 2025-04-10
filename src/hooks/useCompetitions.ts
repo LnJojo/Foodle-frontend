@@ -11,7 +11,6 @@ export function useCompetitions() {
     try {
       setLoading(true);
       const data = await competitionService.getCompetitions();
-      console.log('Fetched competitions data:', data);
       setCompetitions(data);
       setError(null);
     } catch (err: any) {

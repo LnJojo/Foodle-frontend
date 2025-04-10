@@ -10,8 +10,6 @@ const Navbar = React.memo(() => {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
-  console.log("Navbar render:", { user, loading });
-
   const handleLogout = async () => {
     try {
       await logout();

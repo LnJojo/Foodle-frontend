@@ -13,14 +13,16 @@ import {
 } from "@/components/ui/card";
 import Logo from "../assets/Logo.svg";
 import { useAuth } from "@/contexts/AuthContext";
+import { Loader2 } from "lucide-react"; // Importez l'icône de chargement
 
 const LoginPage = () => {
   useEffect(() => {
     document.title = "Connexion | Foodle";
   }, []);
-  const [username, setUsername] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // État pour gérer le chargement
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,9 +34,11 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true); // Activer l'état de chargement
 
     try {
-      await login(username, password);
+      // Passer le nom d'utilisateur/email et le mot de passe à la fonction login
+      await login(usernameOrEmail, password);
 
       // Vérifier s'il y a une invitation en attente dans sessionStorage
       const pendingInvitation = sessionStorage.getItem("pendingInvitation");
@@ -49,8 +53,11 @@ const LoginPage = () => {
     } catch (err: any) {
       setError(
         err.response?.data?.detail ||
+          err.response?.data?.non_field_errors?.[0] ||
           "Une erreur est survenue lors de la connexion"
       );
+    } finally {
+      setIsLoading(false); // Désactiver l'état de chargement, peu importe le résultat
     }
   };
 
@@ -70,7 +77,7 @@ const LoginPage = () => {
             Connexion
           </CardTitle>
           <CardDescription className="text-center">
-            Entrez vos identifiants pour accéder à votre compte
+            Entrez votre email ou nom d'utilisateur pour accéder à votre compte
           </CardDescription>
           {redirectPath && redirectPath.includes("/invite/") && (
             <div className="mt-2 text-sm text-amber-600 text-center">
@@ -87,12 +94,15 @@ const LoginPage = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="username">Nom d'utilisateur</Label>
+              <Label htmlFor="usernameOrEmail">
+                Email ou nom d'utilisateur
+              </Label>
               <Input
-                id="username"
+                id="usernameOrEmail"
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={usernameOrEmail}
+                onChange={(e) => setUsernameOrEmail(e.target.value)}
+                disabled={isLoading} // Désactiver pendant le chargement
                 required
               />
             </div>
@@ -104,6 +114,7 @@ const LoginPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading} // Désactiver pendant le chargement
                 required
               />
               <div className="flex items-center justify-between">
@@ -112,6 +123,7 @@ const LoginPage = () => {
                     type="checkbox"
                     id="remember"
                     className="h-4 w-4 rounded border-gray-300"
+                    disabled={isLoading} // Désactiver pendant le chargement
                   />
                   <Label htmlFor="remember">Se souvenir de moi</Label>
                 </div>
@@ -127,8 +139,16 @@ const LoginPage = () => {
             <Button
               type="submit"
               className="w-full bg-amber-700 hover:bg-amber-600"
+              disabled={isLoading} // Désactiver le bouton pendant le chargement
             >
-              Se connecter
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connexion en cours...
+                </>
+              ) : (
+                "Se connecter"
+              )}
             </Button>
           </form>
         </CardContent>

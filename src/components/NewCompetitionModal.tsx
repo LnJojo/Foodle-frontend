@@ -70,7 +70,7 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
   const [description, setDescription] = useState<string>("");
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [maxParticipants, setMaxParticipants] = useState<string>("8");
+  const [maxParticipants, setMaxParticipants] = useState<string>("99");
   const [theme, setTheme] = useState<string>("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -115,14 +115,6 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
       newErrors.endDate = "La date de fin doit être après la date de début";
     }
 
-    // Validation du nombre de participants
-    const participants = parseInt(maxParticipants);
-    if (isNaN(participants) || participants < 2) {
-      newErrors.maxParticipants = "Le nombre minimum de participants est 2";
-    } else if (participants > 20) {
-      newErrors.maxParticipants = "Le nombre maximum de participants est 20";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -144,8 +136,6 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
       theme: theme || undefined,
     };
 
-    console.log("Données envoyées:", competitionData);
-
     try {
       await onCreateCompetition({
         name,
@@ -163,7 +153,7 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
       setDescription("");
       setStartDate(undefined);
       setEndDate(undefined);
-      setMaxParticipants("8");
+      setMaxParticipants("99");
       setTheme("");
       setErrors({});
 
@@ -254,9 +244,7 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
                   ))
                 ) : (
                   <>
-                    <SelectItem value="1">Les Gourmets</SelectItem>
-                    <SelectItem value="2">Collègues Foodie</SelectItem>
-                    <SelectItem value="3">Amis du Quartier</SelectItem>
+                    <SelectItem value="1">Erreur</SelectItem>
                   </>
                 )}
                 {/* Ajout d'une option pour le groupe présélectionné s'il n'est pas déjà dans la liste */}
@@ -331,31 +319,6 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
                 <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>
               )}
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="max-participants" className="text-sm font-medium">
-              Nombre maximum de participants
-              <span className="text-red-500">*</span>
-            </label>
-            <Input
-              id="max-participants"
-              type="number"
-              min="2"
-              max="20"
-              value={maxParticipants}
-              onChange={(e) => setMaxParticipants(e.target.value)}
-              className={
-                errors.maxParticipants
-                  ? "border-red-300 focus-visible:ring-red-500"
-                  : ""
-              }
-            />
-            {errors.maxParticipants && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.maxParticipants}
-              </p>
-            )}
           </div>
 
           <div className="space-y-2">

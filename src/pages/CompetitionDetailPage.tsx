@@ -159,6 +159,18 @@ const CompetitionDetailPage = () => {
     return userId === creatorId;
   };
 
+  const canRateRestaurant = (restaurant: Restaurant) => {
+    // Vérifier si la compétition est terminée
+    if (competition?.status === "completed") {
+      return false;
+    }
+
+    // Vérifier si la date de visite est passée
+    const visitDate = new Date(restaurant.visit_date);
+    const today = new Date();
+    return visitDate <= today;
+  };
+
   const updateParticipantRankings = useCallback(() => {
     if (
       !competition?.participants ||
@@ -1097,7 +1109,7 @@ const CompetitionDetailPage = () => {
                         {restaurant.suggested_by?.username || "Non spécifié"}
                       </p>
                     </div>
-                    {isParticipant && (
+                    {isParticipant && canRateRestaurant(restaurant) && (
                       <Button
                         variant="outline"
                         size="sm"
@@ -1109,6 +1121,13 @@ const CompetitionDetailPage = () => {
                           ? "Modifier ma note"
                           : "Noter ce restaurant"}
                       </Button>
+                    )}
+                    {isParticipant && !canRateRestaurant(restaurant) && (
+                      <span className="text-xs text-gray-500">
+                        {competition?.status === "completed"
+                          ? "La compétition est terminée"
+                          : "Disponible après la date de visite"}
+                      </span>
                     )}
                   </div>
 

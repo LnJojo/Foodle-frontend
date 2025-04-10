@@ -9,12 +9,19 @@ import { authService } from "@/api/api";
 
 import { User } from "@/types/index";
 
+// Mettre à jour l'interface pour rendre le login plus flexible
+interface LoginCredentials {
+  username?: string;
+  email?: string;
+  password: string;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
   error: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (usernameOrEmail: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
@@ -56,10 +63,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     initAuth();
   }, []);
 
-  const login = async (username: string, password: string) => {
+  const login = async (usernameOrEmail: string, password: string) => {
     try {
       setLoading(true);
-      const response = await authService.login({ username, password });
+
+      // Déterminer si l'entrée est un email ou un nom d'utilisateur
+      const isEmail = usernameOrEmail.includes("@");
+
+      // Créer l'objet de connexion approprié
+      const loginData: LoginCredentials = {
+        password,
+      };
+
+      // Affecter la valeur au bon champ
+      if (isEmail) {
+        loginData.email = usernameOrEmail;
+      } else {
+        loginData.username = usernameOrEmail;
+      }
+
+      const response = await authService.login(loginData);
 
       // Stocker le token
       if (response.key) {
