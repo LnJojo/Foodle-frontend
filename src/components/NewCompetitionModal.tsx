@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
 import { toast } from "sonner";
+import { DatePickerClient } from "./ui/date-picker-client";
 
 // Définition des types
 interface GroupType {
@@ -308,7 +309,7 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
               <label className="text-sm font-medium">
                 Date de début<span className="text-red-500">*</span>
               </label>
-              <DatePicker
+              <DatePickerClient
                 date={startDate}
                 onSelect={setStartDate}
                 label="Date de début"
