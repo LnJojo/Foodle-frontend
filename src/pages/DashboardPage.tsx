@@ -84,7 +84,7 @@ const DashboardPage = () => {
   const handleCreateGroup = async (groupData: NewGroupData) => {
     setIsCreatingGroup(true);
     try {
-      // Fermer la modal avant d'attendre la réponse du serveur pour une meilleure UX
+      // Fermer la modal avant d'attendre la réponse du serveur 
       setIsNewGroupModalOpen(false);
 
       // Afficher un toast de "création en cours" qui sera remplacé par un toast de succès
@@ -118,7 +118,7 @@ const DashboardPage = () => {
   ) => {
     setIsCreatingCompetition(true);
     try {
-      // Fermer la modal immédiatement pour une meilleure UX
+      // Fermer la modal immédiatement
       setIsNewCompetitionModalOpen(false);
 
       const formattedData = {
@@ -188,7 +188,7 @@ const DashboardPage = () => {
             Gérez vos groupes et compétitions
           </h1>
 
-          {/* Boutons - affichés en dessous sur mobile, à côté sur desktop */}
+          {/* Boutons */}
           <div className="flex flex-col sm:flex-row gap-2 mt-3 sm:mt-4">
             <Button
               onClick={() => setIsNewGroupModalOpen(true)}
@@ -243,7 +243,6 @@ const DashboardPage = () => {
           </TabsList>
 
           <TabsContent value="groups" className="mt-6">
-            {/* Contenu de l'onglet groupes */}
 
             {/* Groupes favoris */}
             {groupsLoading ? (
