@@ -221,7 +221,7 @@ const NewRestaurantModal: React.FC<NewRestaurantModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Affichage de l'erreur générale du serveur */}
+          {/* Affichage de l'erreur du serveur */}
           {errors.server && (
             <div className="bg-red-50 p-3 rounded-md text-red-600 text-sm">
               {errors.server}
