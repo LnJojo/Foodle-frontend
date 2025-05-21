@@ -33,7 +33,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
     );
   }
 
-  // Si l'utilisateur est authentifié, afficher les enfants (le contenu de la route)
+  // Si l'utilisateur est authentifié
   return <>{children}</>;
 };
 
