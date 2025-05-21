@@ -149,12 +149,8 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
 
       onClose();
     } catch (error: any) {
-      // Mapper les erreurs du serveur aux champs du formulaire
       const formattedErrors: FormErrors = {};
 
-      // Mapper chaque champ possible...
-
-      // Erreur générale si aucune erreur spécifique n'est trouvée
       if (Object.keys(formattedErrors).length === 0) {
         formattedErrors.server =
           "Une erreur est survenue lors de la création de la compétition";
@@ -237,7 +233,6 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
                     <SelectItem value="1">Erreur</SelectItem>
                   </>
                 )}
-                {/* Ajout d'une option pour le groupe présélectionné s'il n'est pas déjà dans la liste */}
                 {preselectedGroupId &&
                   preselectedGroupName &&
                   !userGroups.some(
