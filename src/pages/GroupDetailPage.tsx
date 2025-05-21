@@ -73,7 +73,7 @@ const GroupDetailPage = () => {
     setIsCreatingCompetition(true);
 
     try {
-      // Fermer la modal immédiatement pour une meilleure UX
+      // Fermer la modal immédiatement
       setIsNewCompetitionModalOpen(false);
 
       const formattedData = {
@@ -132,7 +132,7 @@ const GroupDetailPage = () => {
     setIsGeneratingLink(true);
     try {
       const data = await groupService.createInvitation(Number(id));
-      // Construire l'URL complète côté frontend avec le bon port
+      // Construire l'URL complète
       const invitationUrl = `${window.location.origin}/invite/${data.id}`;
       setInvitationLink(invitationUrl);
       toast.success("Lien d'invitation généré avec succès !");
@@ -152,7 +152,6 @@ const GroupDetailPage = () => {
   };
 
   const toggleFavorite = async () => {
-    // Optimistic UI update - mettre à jour l'UI immédiatement
     setIsFavorite((prevState) => !prevState);
 
     try {
@@ -176,7 +175,6 @@ const GroupDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-10">
-      {/* Navbar identique au dashboard */}
       <Navbar />
 
       {/* Contenu principal */}
