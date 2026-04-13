@@ -266,10 +266,9 @@ const CompetitionDetailPage = () => {
   }) => {
     if (!selectedRestaurant) return;
 
-    // Fermer le modal immédiatement pour une meilleure UX
+    // Fermer le modal immédiatement
     setIsRatingModalOpen(false);
 
-    // Toast pour indiquer le traitement en cours
     const toastId = toast.loading("Enregistrement de votre évaluation...");
 
     try {
@@ -282,8 +281,7 @@ const CompetitionDetailPage = () => {
         comment: ratingData.comment,
       };
 
-      // Mise à jour optimiste pour l'interface utilisateur
-      // Calculer le score moyen selon la méthode overall_score du modèle
+      // Calculer le score moyen
       const overallScore = Math.round(
         (ratingData.foodScore +
           ratingData.serviceScore +
@@ -292,8 +290,6 @@ const CompetitionDetailPage = () => {
           4
       );
 
-      // Créer une note optimiste avec juste les champs nécessaires
-      // Sans les champs gérés par le backend
       const optimisticRating: Rating = {
         id: existingRating?.id || Date.now(), // ID temporaire si nouvelle note
         restaurant: selectedRestaurant.id,
@@ -304,11 +300,11 @@ const CompetitionDetailPage = () => {
         value_score: ratingData.valueScore,
         overall_score: overallScore,
         comment: ratingData.comment,
-        // Conserver created_at s'il existe déjà, sinon utiliser la date actuelle pour l'UI
+        // Conserver created_at s'il existe déjà
         created_at: existingRating?.created_at || new Date().toISOString(),
       };
 
-      // Mise à jour optimiste des états
+      // Mise à jour des états
       if (existingRating) {
         // Mise à jour d'une note existante
         setUserRatings((prev) => ({
@@ -355,18 +351,18 @@ const CompetitionDetailPage = () => {
         await ratingService.createRating(payload);
       }
 
-      // Récupérer les données à jour depuis le serveur pour s'assurer que tout est synchronisé
+      // Récupérer les données à jour
       const updatedRatings = await ratingService.getRatings(
         selectedRestaurant.id
       );
 
-      // Mettre à jour l'état restaurantRatings avec les données fraîches
+      // Mettre à jour l'état restaurantRatings
       setRestaurantRatings((prev) => ({
         ...prev,
         [selectedRestaurant.id]: updatedRatings,
       }));
 
-      // Mettre à jour userRatings avec les données fraîches
+      // Mettre à jour userRatings
       if (user) {
         const userId = user.id !== undefined ? user.id : user.pk;
         const freshUserRating = updatedRatings.find(
@@ -382,7 +378,6 @@ const CompetitionDetailPage = () => {
       // Mettre à jour le classement des participants
       updateParticipantRankings();
 
-      // Supprimer le toast de chargement et afficher un toast de succès
       toast.dismiss(toastId);
       toast.success(
         existingRating
@@ -482,13 +477,12 @@ const CompetitionDetailPage = () => {
     const toastId = toast.loading("Finalisation de la compétition en cours...");
 
     try {
-      // Mise à jour optimiste de l'interface
       setCompetition({
         ...competition,
         status: "completed",
       });
 
-      // Appel API pour mettre à jour le statut de la compétition
+      // Mettre à jour le statut de la compétition
       await competitionService.updateCompetition(competition.id, {
         status: "completed",
       } as Partial<CreateCompetitionRequest>);
@@ -546,13 +540,11 @@ const CompetitionDetailPage = () => {
 
   const handleCreateRestaurant = async (restaurantData: any) => {
     setIsCreatingRestaurant(true);
-    // Fermer la modal immédiatement pour une meilleure UX
     setIsRestaurantModalOpen(false);
 
     const toastId = toast.loading("Ajout du restaurant en cours...");
 
     try {
-      // Préparer un restaurant optimiste pour l'UI
       const optimisticRestaurant: Restaurant = {
         id: Date.now(), // ID temporaire
         name: restaurantData.name,
@@ -565,9 +557,7 @@ const CompetitionDetailPage = () => {
         ratings: [],
       };
 
-      // Mise à jour optimiste de l'interface
       if (competition) {
-        // Ajouter optimistiquement le restaurant à l'état local
         setCompetition({
           ...competition,
           restaurants: [
@@ -577,12 +567,12 @@ const CompetitionDetailPage = () => {
         });
       }
 
-      // Créer réellement le restaurant
+      // Créer le restaurant
       const newRestaurant = await restaurantService.createRestaurant(
         restaurantData
       );
 
-      // Mettre à jour l'état avec les données réelles du serveur
+      // Mettre à jour l'état avec les données du serveur
       if (competition) {
         setCompetition((prev) => {
           if (!prev) return prev;
@@ -647,7 +637,7 @@ const CompetitionDetailPage = () => {
         });
       }
 
-      // Appel à l'API pour rejoindre la compétition
+      // Rejoindre la compétition
       await competitionService.joinCompetition(competition.id);
 
       toast.dismiss(toastId);
@@ -680,11 +670,11 @@ const CompetitionDetailPage = () => {
 
       setLoading(true);
 
-      // 1. Chargement de la compétition
+      // Chargement de la compétition
       const data = await competitionService.getCompetition(Number(id));
       setCompetition(data);
 
-      // 2. Vérification si l'utilisateur est participant
+      // Vérification si l'utilisateur est participant
       if (user && data.participants) {
         if (data.participants) {
           const userIsParticipant = checkIfUserIsParticipant(
@@ -697,14 +687,14 @@ const CompetitionDetailPage = () => {
         setIsCreator(userIsCreator);
       }
 
-      // 3. Chargement immédiat des évaluations pour chaque restaurant
+      // Chargement immédiat des évaluations pour chaque restaurant
       if (data.restaurants && data.restaurants.length > 0) {
         // Créer un tableau de promesses pour toutes les requêtes d'évaluation
         const ratingsPromises = data.restaurants.map((restaurant) =>
           ratingService.getRatings(restaurant.id)
         );
 
-        // Exécuter toutes les promesses en parallèle
+        // Exécuter toutes les promesses
         const ratingsResults = await Promise.all(ratingsPromises);
 
         // Construire les maps d'évaluations
@@ -802,7 +792,6 @@ const CompetitionDetailPage = () => {
       isRestaurantVisited(restaurant)
     ).length;
 
-    // Le total est le nombre total de restaurants dans la compétition
     const totalCount = competition.restaurants.length;
 
     // Calculer le pourcentage
@@ -839,7 +828,6 @@ const CompetitionDetailPage = () => {
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        {/* En-tête avec le titre et le statut - Version mobile améliorée */}
         <div className="mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <div className="flex items-start justify-between mb-2 sm:mb-0">
@@ -856,7 +844,7 @@ const CompetitionDetailPage = () => {
               </span>
             </div>
 
-            {/* Boutons d'action - Affichage responsive */}
+            {/* Boutons d'action */}
             <div className="flex flex-wrap gap-2 mt-3 sm:mt-0">
               {isCreator &&
                 (competition.status === "active" ||
@@ -914,7 +902,7 @@ const CompetitionDetailPage = () => {
           </div>
         </div>
 
-        {/* Cartes d'informations - Version responsive */}
+        {/* Cartes d'informations */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-6">
           {/* Progression */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
@@ -963,7 +951,7 @@ const CompetitionDetailPage = () => {
           </div>
         </div>
 
-        {/* Description - Version mobile avec toggle */}
+        {/* Description */}
         <div className="bg-white p-4 rounded-lg shadow-sm mb-4 sm:mb-6">
           <div
             className="flex justify-between items-center cursor-pointer"
@@ -981,7 +969,7 @@ const CompetitionDetailPage = () => {
           )}
         </div>
 
-        {/* Onglets - Version responsive */}
+        {/* Onglets */}
         <Tabs defaultValue="restaurants" className="w-full">
           <div className="mb-4">
             <TabsList className="bg-white border border-gray-200 rounded-md w-full">
@@ -1003,7 +991,7 @@ const CompetitionDetailPage = () => {
           </div>
 
           <TabsContent value="restaurants" className="mt-0">
-            {/* Contrôles de filtre - Version mobile améliorée */}
+            {/* Contrôles de filtre */}
             <div className="flex flex-wrap gap-2 mb-4">
               <Button
                 variant="outline"
@@ -1054,14 +1042,14 @@ const CompetitionDetailPage = () => {
               </DropdownMenu>
             </div>
 
-            {/* Liste des restaurants - Version optimisée pour mobile */}
+            {/* Liste des restaurants */}
             {getFilteredAndSortedRestaurants.length > 0 ? (
               getFilteredAndSortedRestaurants.map((restaurant) => (
                 <div
                   key={restaurant.id}
                   className="bg-white mb-3 p-4 rounded-lg shadow-sm"
                 >
-                  {/* En-tête du restaurant avec statut - Optimisé pour mobile */}
+                  {/* En-tête du restaurant avec statut */}
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start">
                     <div className="mb-2 sm:mb-0">
                       <h3 className="text-lg font-bold text-gray-900 break-words pr-2">
@@ -1096,7 +1084,7 @@ const CompetitionDetailPage = () => {
                   {/* Séparateur */}
                   <div className="h-px w-full bg-gray-100 my-3 block sm:hidden"></div>
 
-                  {/* Informations et actions - Optimisé pour mobile */}
+                  {/* Informations et actions */}
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                     <div className="flex items-center mb-3 sm:mb-0">
                       <Avatar className="h-6 w-6 mr-2">
@@ -1234,7 +1222,7 @@ const CompetitionDetailPage = () => {
                 Classement des participants
               </h3>
 
-              {/* Version mobile du tableau de classement - visible uniquement sur mobile */}
+              {/* Version mobile du tableau de classement */}
               <div className="block sm:hidden space-y-3">
                 {participantRankings.length > 0 ? (
                   participantRankings.map((ranking, index) => (
@@ -1288,7 +1276,7 @@ const CompetitionDetailPage = () => {
                 )}
               </div>
 
-              {/* Version desktop du tableau - visible uniquement sur desktop */}
+              {/* Version desktop du tableau */}
               <div className="hidden sm:block overflow-x-auto mt-4">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-amber-50">

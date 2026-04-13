@@ -5,7 +5,6 @@ import {
   CreateCompetitionRequest, CreateRestaurantRequest, CreateRatingRequest
 } from '../types';
 
-// Créer une instance axios avec la configuration de base
 const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/`,
   headers: {
@@ -13,12 +12,11 @@ const api = axios.create({
   },
 });
 
-// Intercepteur pour ajouter le token d'authentification à chaque requête
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token'); // Ou l'endroit où vous stockez votre token
+    const token = localStorage.getItem('token'); 
     if (token) {
-      config.headers.Authorization = `Token ${token}`; // ou `Bearer ${token}` selon votre backend
+      config.headers.Authorization = `Token ${token}`; 
     }
     return config;
   },
@@ -51,11 +49,8 @@ export const authService = {
       const response = await api.post('auth/registration/', payload);
       return response.data;
     } catch (error: any) {
-      // Transformer les erreurs pour un traitement plus facile côté frontend
       if (error.response?.data) {
-        // Si nous avons des erreurs spécifiques à l'email
         if (error.response.data.email) {
-          // On peut choisir de formater l'erreur pour une meilleure lisibilité
           if (typeof error.response.data.email === 'object') {
             error.response.data.email = error.response.data.email[0];
           }
@@ -192,8 +187,6 @@ export const competitionService = {
       const response = await api.post('competitions/create_competition/', data);
       const newCompetition = response.data;
       
-      // Le créateur rejoint automatiquement la compétition côté backend
-      // Mais pour s'assurer que tout fonctionne, on peut également appeler explicitement joinCompetition
       try {
         await api.post(`competitions/${newCompetition.id}/join/`);
       } catch (joinError) {
