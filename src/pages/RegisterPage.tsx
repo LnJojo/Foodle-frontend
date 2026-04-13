@@ -13,7 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { authService } from "@/api/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check, X } from "lucide-react";
+
+// Règles calquées sur les validators Django
+const passwordRules = [
+  { label: "Au moins 8 caractères", test: (p: string) => p.length >= 8 },
+  { label: "Pas uniquement des chiffres", test: (p: string) => !/^\d+$/.test(p) },
+  { label: "Contient au moins une lettre", test: (p: string) => /[a-zA-Z]/.test(p) },
+];
 
 const RegisterPage = () => {
   useEffect(() => {
@@ -26,8 +33,12 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [usernameError, setUsernameError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // État pour gérer le chargement
+  const [passwordError, setPasswordError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
+
+  const passwordValid = passwordRules.every((rule) => rule.test(password));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +46,13 @@ const RegisterPage = () => {
     setError("");
     setEmailError("");
     setUsernameError("");
+    setPasswordError("");
     setIsLoading(true);
+
+    if (!passwordValid) {
+      setIsLoading(false);
+      return;
+    }
 
     if (password !== passwordConfirm) {
       setError("Les mots de passe ne correspondent pas");
@@ -57,20 +74,17 @@ const RegisterPage = () => {
         },
       });
     } catch (err: any) {
-      // Gestion spécifique des erreurs d'email
-      if (err.response?.data?.email) {
-        setEmailError(err.response.data.email[0]);
+      const data = err.response?.data;
+
+      if (data?.email) setEmailError(Array.isArray(data.email) ? data.email[0] : data.email);
+      if (data?.username) setUsernameError(Array.isArray(data.username) ? data.username[0] : data.username);
+      if (data?.password1) setPasswordError(Array.isArray(data.password1) ? data.password1[0] : data.password1);
+
+      // N'afficher l'erreur générale que si aucune erreur de champ n'est disponible
+      const hasFieldError = data?.email || data?.username || data?.password1;
+      if (!hasFieldError) {
+        setError(data?.detail || data?.non_field_errors?.[0] || "Une erreur est survenue lors de l'inscription");
       }
-      // Gestion spécifique des erreurs de username
-      if (err.response?.data?.username) {
-        setUsernameError(err.response.data.username[0]);
-      }
-      // Message d'erreur général
-      setError(
-        err.response?.data?.detail ||
-          err.response?.data?.non_field_errors?.[0] ||
-          "Une erreur est survenue lors de l'inscription"
-      );
     } finally {
       setIsLoading(false);
     }
@@ -150,10 +164,27 @@ const RegisterPage = () => {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setPasswordTouched(true); }}
                 required
                 disabled={isLoading}
+                className={passwordError ? "border-red-500" : ""}
               />
+              {passwordTouched && (
+                <ul className="space-y-1 mt-1">
+                  {passwordRules.map((rule) => {
+                    const ok = rule.test(password);
+                    return (
+                      <li key={rule.label} className={`flex items-center gap-1 text-xs ${ok ? "text-green-600" : "text-red-500"}`}>
+                        {ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                        {rule.label}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              {passwordError && (
+                <p className="text-red-500 text-sm">{passwordError}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -171,7 +202,7 @@ const RegisterPage = () => {
             <Button
               type="submit"
               className="w-full bg-amber-600 hover:bg-amber-700"
-              disabled={!!emailError || isLoading}
+              disabled={!!emailError || (passwordTouched && !passwordValid) || isLoading}
             >
               {isLoading ? (
                 <>
