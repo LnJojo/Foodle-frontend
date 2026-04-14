@@ -6,7 +6,6 @@ import {
   ReactNode,
 } from "react";
 import { authService } from "@/api/api";
-import api from "@/api/api";
 
 import { User } from "@/types/index";
 
@@ -40,8 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initAuth = async () => {
       try {
         setLoading(true);
-        // Initialise le cookie CSRF pour les futures requêtes authentifiées
-        await api.get('auth/csrf/');
         // Vérifie si l'utilisateur est déjà connecté via cookie JWT
         const userData = await authService.getCurrentUser();
         setUser(userData);

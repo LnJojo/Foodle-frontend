@@ -67,12 +67,7 @@ const RegisterPage = () => {
         password,
         password_confirm: passwordConfirm,
       });
-      navigate("/login", {
-        state: {
-          message:
-            "Compte créé avec succès. Vous pouvez maintenant vous connecter.",
-        },
-      });
+      navigate("/check-email");
     } catch (err: any) {
       const data = err.response?.data;
 

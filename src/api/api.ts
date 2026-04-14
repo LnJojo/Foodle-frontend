@@ -13,24 +13,6 @@ const api = axios.create({
   withCredentials: true, // Envoie les cookies JWT httpOnly avec chaque requête
 });
 
-// Lit le cookie CSRF (non-httpOnly) et l'attache aux requêtes qui modifient des données
-function getCsrfToken(): string | undefined {
-  return document.cookie
-    .split('; ')
-    .find(row => row.startsWith('csrftoken='))
-    ?.split('=')[1];
-}
-
-api.interceptors.request.use((config) => {
-  const method = config.method?.toLowerCase();
-  if (method && ['post', 'put', 'patch', 'delete'].includes(method)) {
-    const csrfToken = getCsrfToken();
-    if (csrfToken) {
-      config.headers['X-CSRFToken'] = csrfToken;
-    }
-  }
-  return config;
-});
 
 // Services d'authentification
 export const authService = {
@@ -76,6 +58,23 @@ export const authService = {
   getCurrentUser: async () => {
     const response = await api.get('auth/user/');
     return response.data as User;
+  },
+  forgotPassword: async (email: string) => {
+    const response = await api.post('auth/password/reset/', { email });
+    return response.data;
+  },
+  resetPassword: async (uid: string, token: string, newPassword1: string, newPassword2: string) => {
+    const response = await api.post('auth/password/reset/confirm/', {
+      uid,
+      token,
+      new_password1: newPassword1,
+      new_password2: newPassword2,
+    });
+    return response.data;
+  },
+  verifyEmail: async (key: string) => {
+    const response = await api.post('auth/registration/verify-email/', { key });
+    return response.data;
   },
 };
 
