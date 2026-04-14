@@ -21,8 +21,9 @@ const LoginPage = () => {
   }, []);
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // État pour gérer le chargement
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,7 +39,7 @@ const LoginPage = () => {
 
     try {
       // Passer le nom d'utilisateur/email et le mot de passe à la fonction login
-      await login(usernameOrEmail, password);
+      await login(usernameOrEmail, password, rememberMe);
 
       // Vérifier s'il y a une invitation en attente dans sessionStorage
       const pendingInvitation = sessionStorage.getItem("pendingInvitation");
@@ -121,7 +122,9 @@ const LoginPage = () => {
                     type="checkbox"
                     id="remember"
                     className="h-4 w-4 rounded border-gray-300"
-                    disabled={isLoading} // Désactiver pendant le chargement
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    disabled={isLoading}
                   />
                   <Label htmlFor="remember">Se souvenir de moi</Label>
                 </div>

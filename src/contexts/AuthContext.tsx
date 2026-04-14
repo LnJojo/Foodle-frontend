@@ -6,14 +6,15 @@ import {
   ReactNode,
 } from "react";
 import { authService } from "@/api/api";
+import api from "@/api/api";
 
 import { User } from "@/types/index";
 
-// Mettre à jour l'interface pour rendre le login plus flexible
 interface LoginCredentials {
   username?: string;
   email?: string;
   password: string;
+  remember_me: boolean;
 }
 
 interface AuthContextType {
@@ -21,7 +22,7 @@ interface AuthContextType {
   loading: boolean;
   isAuthenticated: boolean;
   error: string | null;
-  login: (usernameOrEmail: string, password: string) => Promise<void>;
+  login: (usernameOrEmail: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
@@ -37,25 +38,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          setLoading(true);
-          const userData = await authService.getCurrentUser();
-          setUser(userData);
-          setError(null);
-        } catch (err) {
-          console.error(
-            "Erreur lors de l'initialisation de l'authentification:",
-            err
-          );
-          localStorage.removeItem("token");
-          setUser(null);
-          setError("Session expirée, veuillez vous reconnecter");
-        } finally {
-          setLoading(false);
-        }
-      } else {
+      try {
+        setLoading(true);
+        // Initialise le cookie CSRF pour les futures requêtes authentifiées
+        await api.get('auth/csrf/');
+        // Vérifie si l'utilisateur est déjà connecté via cookie JWT
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+        setError(null);
+      } catch {
+        // Pas de session active — état normal pour un utilisateur non connecté
+        setUser(null);
+      } finally {
         setLoading(false);
       }
     };
@@ -63,35 +57,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     initAuth();
   }, []);
 
-  const login = async (usernameOrEmail: string, password: string) => {
+  const login = async (usernameOrEmail: string, password: string, rememberMe: boolean = false) => {
     try {
       setLoading(true);
 
       // Déterminer si l'entrée est un email ou un nom d'utilisateur
       const isEmail = usernameOrEmail.includes("@");
 
-      // Créer l'objet de connexion approprié
       const loginData: LoginCredentials = {
         password,
+        remember_me: rememberMe,
       };
 
-      // Affecter la valeur au bon champ
       if (isEmail) {
         loginData.email = usernameOrEmail;
       } else {
         loginData.username = usernameOrEmail;
       }
 
-      const response = await authService.login(loginData);
+      await authService.login(loginData);
 
-      // Stocker le token
-      if (response.key) {
-        localStorage.setItem("token", response.key);
-      } else if (response.token) {
-        localStorage.setItem("token", response.token);
-      }
-
-      // Récupérer les informations de l'utilisateur
+      // Le backend a posé les cookies JWT httpOnly — on récupère juste le profil
       const userData = await authService.getCurrentUser();
       setUser(userData);
       setError(null);
@@ -108,10 +94,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
       await authService.logout();
-      localStorage.removeItem("token");
+      // Le backend supprime les cookies JWT — pas de localStorage à nettoyer
       setUser(null);
     } catch (err) {
       console.error("Erreur de déconnexion:", err);
+      setUser(null);
     } finally {
       setLoading(false);
     }

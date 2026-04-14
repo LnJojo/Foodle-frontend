@@ -10,18 +10,27 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Envoie les cookies JWT httpOnly avec chaque requête
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token'); 
-    if (token) {
-      config.headers.Authorization = `Token ${token}`; 
+// Lit le cookie CSRF (non-httpOnly) et l'attache aux requêtes qui modifient des données
+function getCsrfToken(): string | undefined {
+  return document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+}
+
+api.interceptors.request.use((config) => {
+  const method = config.method?.toLowerCase();
+  if (method && ['post', 'put', 'patch', 'delete'].includes(method)) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      config.headers['X-CSRFToken'] = csrfToken;
     }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+  }
+  return config;
+});
 
 // Services d'authentification
 export const authService = {
