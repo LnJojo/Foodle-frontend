@@ -36,15 +36,15 @@ const RatingRestaurantModal = ({
   existingRating,
 }: RatingRestaurantModalProps) => {
   // États pour les différentes notes
-  const [foodScore, setFoodScore] = useState(existingRating?.food_score || 5);
+  const [foodScore, setFoodScore] = useState(existingRating?.food_score || 3);
   const [serviceScore, setServiceScore] = useState(
-    existingRating?.service_score || 5
+    existingRating?.service_score || 3
   );
   const [ambianceScore, setAmbianceScore] = useState(
-    existingRating?.ambiance_score || 5
+    existingRating?.ambiance_score || 3
   );
   const [valueScore, setValueScore] = useState(
-    existingRating?.value_score || 5
+    existingRating?.value_score || 3
   );
   const [comment, setComment] = useState(existingRating?.comment || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,19 +55,19 @@ const RatingRestaurantModal = ({
     onChange: (value: number) => void
   ) => {
     return (
-      <div className="flex items-center">
-        {[...Array(10)].map((_, index) => (
+      <div className="flex items-center gap-1">
+        {[...Array(5)].map((_, index) => (
           <Star
             key={index}
-            className={`h-6 w-6 cursor-pointer ${
+            className={`h-7 w-7 cursor-pointer transition-colors ${
               index < currentValue
                 ? "fill-amber-400 text-amber-400"
-                : "text-gray-300"
+                : "text-gray-300 hover:text-amber-300"
             }`}
             onClick={() => onChange(index + 1)}
           />
         ))}
-        <span className="ml-2 font-medium">{currentValue}/10</span>
+        <span className="ml-2 font-medium text-gray-600">{currentValue}/5</span>
       </div>
     );
   };

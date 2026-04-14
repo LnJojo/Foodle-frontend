@@ -212,7 +212,7 @@ const NewRestaurantModal: React.FC<NewRestaurantModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Ajouter un restaurant</DialogTitle>
           <DialogDescription>
@@ -220,7 +220,7 @@ const NewRestaurantModal: React.FC<NewRestaurantModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0 pr-1">
           {/* Affichage de l'erreur du serveur */}
           {errors.server && (
             <div className="bg-red-50 p-3 rounded-md text-red-600 text-sm">

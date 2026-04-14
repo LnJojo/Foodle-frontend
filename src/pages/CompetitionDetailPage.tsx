@@ -38,6 +38,13 @@ import {
   Restaurant,
   User,
 } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import Navbar from "@/components/Navbar";
 import { toast } from "sonner";
 import {
@@ -81,6 +88,7 @@ const CompetitionDetailPage = () => {
   const [showDescription, setShowDescription] = useState<boolean>(false);
   const [isCreatingRestaurant, setIsCreatingRestaurant] = useState(false);
   const [isJoiningCompetition, setIsJoiningCompetition] = useState(false);
+  const [finishConfirmOpen, setFinishConfirmOpen] = useState(false);
 
   // Fonction pour déterminer si un restaurant a été visité (a des évaluations)
   const isRestaurantVisited = useCallback(
@@ -851,11 +859,7 @@ const CompetitionDetailPage = () => {
                   competition.status === "planning") && (
                   <Button
                     variant="outline"
-                    onClick={handleFinishCompetition}
-                    disabled={
-                      competition.status ===
-                      ("completed" as Competition["status"])
-                    }
+                    onClick={() => setFinishConfirmOpen(true)}
                     className="border-amber-600 text-amber-700 hover:bg-amber-50 flex-1 sm:flex-none"
                     size="sm"
                   >
@@ -881,7 +885,7 @@ const CompetitionDetailPage = () => {
                     </>
                   )}
                 </Button>
-              ) : (
+              ) : competition.status !== "completed" ? (
                 <Button
                   className="bg-amber-600 hover:bg-amber-700 flex-1 sm:flex-none"
                   onClick={handleJoinCompetition}
@@ -897,7 +901,7 @@ const CompetitionDetailPage = () => {
                     </>
                   )}
                 </Button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
@@ -1157,7 +1161,7 @@ const CompetitionDetailPage = () => {
                                       <span className="ml-auto font-bold text-amber-600 text-sm flex items-center">
                                         {rating.overall_score}
                                         <span className="text-gray-400 text-xs ml-0.5">
-                                          /10
+                                          /5
                                         </span>
                                       </span>
                                     </div>
@@ -1165,13 +1169,13 @@ const CompetitionDetailPage = () => {
                                       <div className="flex items-center text-xs text-gray-600">
                                         <span className="w-16">Nourriture</span>
                                         <span className="font-medium">
-                                          {rating.food_score}/10
+                                          {rating.food_score}/5
                                         </span>
                                       </div>
                                       <div className="flex items-center text-xs text-gray-600">
                                         <span className="w-16">Service</span>
                                         <span className="font-medium">
-                                          {rating.service_score}/10
+                                          {rating.service_score}/5
                                         </span>
                                       </div>
                                     </div>
@@ -1179,13 +1183,13 @@ const CompetitionDetailPage = () => {
                                       <div className="flex items-center text-xs text-gray-600">
                                         <span className="w-16">Ambiance</span>
                                         <span className="font-medium">
-                                          {rating.ambiance_score}/10
+                                          {rating.ambiance_score}/5
                                         </span>
                                       </div>
                                       <div className="flex items-center text-xs text-gray-600">
                                         <span className="w-16">Rapport</span>
                                         <span className="font-medium">
-                                          {rating.value_score}/10
+                                          {rating.value_score}/5
                                         </span>
                                       </div>
                                     </div>
@@ -1256,7 +1260,7 @@ const CompetitionDetailPage = () => {
                             <span className="font-bold text-amber-600">
                               {ranking.averageScore}
                             </span>
-                            <span className="text-gray-500 text-sm">/10</span>
+                            <span className="text-gray-500 text-sm">/5</span>
                           </div>
                         ) : (
                           <span className="text-gray-500 text-xs">
@@ -1336,7 +1340,7 @@ const CompetitionDetailPage = () => {
                                 <span className="font-bold text-amber-600">
                                   {ranking.averageScore}
                                 </span>
-                                <span className="text-gray-500">/10</span>
+                                <span className="text-gray-500">/5</span>
                               </div>
                             ) : (
                               <span className="text-gray-500">
@@ -1390,6 +1394,34 @@ const CompetitionDetailPage = () => {
           existingRating={existingRating}
         />
       )}
+
+      {/* Confirmation de fin de compétition */}
+      <Dialog open={finishConfirmOpen} onOpenChange={setFinishConfirmOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Terminer la compétition</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600">
+            Êtes-vous sûr de vouloir terminer{" "}
+            <span className="font-semibold">{competition?.name}</span> ?
+            Cette action est irréversible.
+          </p>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setFinishConfirmOpen(false)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-amber-600 hover:bg-amber-700"
+              onClick={() => {
+                setFinishConfirmOpen(false);
+                handleFinishCompetition();
+              }}
+            >
+              Terminer la compétition
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -587,6 +587,8 @@ const GroupDetailPage = () => {
         onClose={() => setIsNewCompetitionModalOpen(false)}
         onCreateCompetition={handleCreateCompetition}
         userGroups={group ? [group] : undefined}
+        preselectedGroupId={id}
+        preselectedGroupName={group?.name}
       />
     </div>
   );

@@ -165,19 +165,15 @@ const NewCompetitionModal: React.FC<NewCompetitionModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <div className="flex justify-between items-center">
-            <DialogTitle>
-              Définissez les détails de votre compétition
-            </DialogTitle>
-          </div>
+          <DialogTitle>Nouvelle compétition</DialogTitle>
           <DialogDescription>
             Définissez les détails de votre compétition de restaurants.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0 pr-1">
           {/* Affichage de l'erreur générale du serveur */}
           {errors.server && (
             <div className="bg-red-50 p-3 rounded-md text-red-600 text-sm">
