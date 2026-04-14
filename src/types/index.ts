@@ -14,9 +14,10 @@ export interface User {
     name: string;
     description: string;
     creator: User;
-    member_count: number;  // Utilisez ces noms pour correspondre exactement à la réponse de l'API
+    member_count: number;
     competition_count: number;
-    is_favorite?: boolean; // Si vous implémentez cette fonctionnalité
+    is_favorite?: boolean;
+    current_user_role?: 'admin' | 'member' | null;
     created_at: string;
     members?: GroupMember[];
   }

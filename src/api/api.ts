@@ -99,14 +99,19 @@ export const groupService = {
       is_current_user: boolean;
     }>;
   },
-  updateMemberRole: async (groupId: number, userId: number, role: 'admin' | 'member') => {
-    const response = await api.patch(`groups/${groupId}/members/${userId}/`, { role });
+  updateMemberRole: async (memberId: number, role: 'admin' | 'member') => {
+    const response = await api.patch(`group-members/${memberId}/`, { role });
     return response.data;
   },
-  
-  removeMember: async (groupId: number, userId: number) => {
-    const response = await api.delete(`groups/${groupId}/members/${userId}/`);
+
+  removeMember: async (memberId: number) => {
+    const response = await api.delete(`group-members/${memberId}/`);
     return response.data;
+  },
+
+  patchGroup: async (id: number, data: { name?: string; description?: string }) => {
+    const response = await api.patch(`groups/${id}/`, data);
+    return response.data as Group;
   },
   getGroupCompetitions: async (id: number) => {
     const response = await api.get(`competitions/?group=${id}`);
